@@ -1,6 +1,6 @@
 kurs https://datko.pl/GK/
 
-| ![lab3 - 3d egg](egg-lab3.jpg) | 
+| ![lab3 - 3d egg](egg-lab3.gif) | 
 |:--:| 
 | *lab3 - 3d egg* |
 
