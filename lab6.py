@@ -36,38 +36,49 @@ image = Image.open("textures/tekstura.tga")
 
 def axes():
     glBegin(GL_LINES)
-
     # x
     glColor3f(1.0, 0.0, 0.0)
     glVertex3f(-5.0, 0.0, 0.0)
     glVertex3f(5.0, 0.0, 0.0)
-    # x arrow
-    glVertex3f(5.0, 0.0, 0.0)
-    glVertex3f(4.0, 1.0, 0.0)
-    glVertex3f(5.0, 0.0, 0.0)
-    glVertex3f(4.0, -1.0, 0.0)
-
     # y
     glColor3f(0.0, 1.0, 0.0)
     glVertex3f(0.0, -5.0, 0.0)
     glVertex3f(0.0, 5.0, 0.0)
-    # y arrow
-    glVertex3f(0.0, 5.0, 0.0)
-    glVertex3f(1.0, 4.0, 0.0)
-    glVertex3f(0.0, 5.0, 0.0)
-    glVertex3f(-1.0, 4.0, 0.0)
-
     # z
     glColor3f(0.0, 0.0, 1.0)
     glVertex3f(0.0, 0.0, -5.0)
     glVertex3f(0.0, 0.0, 5.0)
-    # z arrow
-    glVertex3f(0.0, 0.0, 5.0)
-    glVertex3f(0.0, 1.0, 4.0)
-    glVertex3f(0.0, 0.0, 5.0)
-    glVertex3f(0.0, -1.0, 4.0)
-
+    # end of axes
     glEnd()
+
+    quadric = gluNewQuadric()
+    # x arrow pointy
+    glColor3f(1.0, 0.0, 0.0)
+    glPushMatrix()
+    glTranslatef(5.0, 0.0, 0.0)
+    glRotatef(90.0, 0.0, 1.0, 0.0)
+    gluCylinder(quadric, 0.1, 0.0, 0.3, 30, 30)
+    glPopMatrix()
+
+    # y arrow pointy
+    glColor3f(0.0, 1.0, 0.0)
+    glPushMatrix()
+    glTranslatef(0.0, 5.0, 0.0)
+    glRotatef(-90.0, 1.0, 0.0, 0.0)
+    gluCylinder(quadric, 0.1, 0.0, 0.3, 30, 30)
+    glPopMatrix()
+
+    # z arrow pointy
+    glColor3f(0.0, 0.0, 1.0)
+    glPushMatrix()
+    glTranslatef(0.0, 0.0, 5.0)
+    gluCylinder(quadric, 0.1, 0.0, 0.3, 30, 30)
+    glPopMatrix()
+
+
+
+
+
 
 def startup():
     update_viewport(None, 400, 400)
@@ -104,26 +115,30 @@ def enable_texture():
     glEnable(GL_LIGHTING)
     glEnable(GL_LIGHT0)
 
+def disable_texture():
+    glDisable(GL_TEXTURE_2D)
+    glDisable(GL_CULL_FACE)
+    glDisable(GL_LIGHTING)
+    glDisable(GL_LIGHT0)
+
 def shutdown():
     pass
 
 
 def render(time):
     global theta
-
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    glDisable(GL_TEXTURE_2D)
-    glDisable(GL_CULL_FACE)
-    glDisable(GL_LIGHTING)
-    glDisable(GL_LIGHT0)
 
     glLoadIdentity()
     gluLookAt(viewer[0], viewer[1], viewer[2],
               0.0, 0.0, 0.0, 0.0, 1.0, 0.0)
+
     if left_mouse_button_pressed:
         theta += delta_x * pix2angle
+
     glRotatef(theta, 0.0, 1.0, 0.0)
 
+    disable_texture()
     axes()
     enable_texture()
 
