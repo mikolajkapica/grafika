@@ -32,6 +32,42 @@ att_constant = 1.0
 att_linear = 0.05
 att_quadratic = 0.001
 
+image = Image.open("textures/tekstura.tga")
+
+def axes():
+    glBegin(GL_LINES)
+
+    # x
+    glColor3f(1.0, 0.0, 0.0)
+    glVertex3f(-5.0, 0.0, 0.0)
+    glVertex3f(5.0, 0.0, 0.0)
+    # x arrow
+    glVertex3f(5.0, 0.0, 0.0)
+    glVertex3f(4.0, 1.0, 0.0)
+    glVertex3f(5.0, 0.0, 0.0)
+    glVertex3f(4.0, -1.0, 0.0)
+
+    # y
+    glColor3f(0.0, 1.0, 0.0)
+    glVertex3f(0.0, -5.0, 0.0)
+    glVertex3f(0.0, 5.0, 0.0)
+    # y arrow
+    glVertex3f(0.0, 5.0, 0.0)
+    glVertex3f(1.0, 4.0, 0.0)
+    glVertex3f(0.0, 5.0, 0.0)
+    glVertex3f(-1.0, 4.0, 0.0)
+
+    # z
+    glColor3f(0.0, 0.0, 1.0)
+    glVertex3f(0.0, 0.0, -5.0)
+    glVertex3f(0.0, 0.0, 5.0)
+    # z arrow
+    glVertex3f(0.0, 0.0, 5.0)
+    glVertex3f(0.0, 1.0, 4.0)
+    glVertex3f(0.0, 0.0, 5.0)
+    glVertex3f(0.0, -1.0, 4.0)
+
+    glEnd()
 
 def startup():
     update_viewport(None, 400, 400)
@@ -52,23 +88,21 @@ def startup():
     glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, att_linear)
     glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, att_quadratic)
 
-    glShadeModel(GL_SMOOTH)
-    glEnable(GL_LIGHTING)
-    glEnable(GL_LIGHT0)
-
+def enable_texture():
     glEnable(GL_TEXTURE_2D)
     glEnable(GL_CULL_FACE)
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
 
-    image = Image.open("textures/tekstura.tga")
-
     glTexImage2D(
         GL_TEXTURE_2D, 0, 3, image.size[0], image.size[1], 0,
         GL_RGB, GL_UNSIGNED_BYTE, image.tobytes("raw", "RGB", 0, -1)
     )
-
+    
+    glShadeModel(GL_SMOOTH)
+    glEnable(GL_LIGHTING)
+    glEnable(GL_LIGHT0)
 
 def shutdown():
     pass
@@ -78,16 +112,22 @@ def render(time):
     global theta
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    glLoadIdentity()
+    glDisable(GL_TEXTURE_2D)
+    glDisable(GL_CULL_FACE)
+    glDisable(GL_LIGHTING)
+    glDisable(GL_LIGHT0)
 
+    glLoadIdentity()
     gluLookAt(viewer[0], viewer[1], viewer[2],
               0.0, 0.0, 0.0, 0.0, 1.0, 0.0)
-
     if left_mouse_button_pressed:
         theta += delta_x * pix2angle
-
     glRotatef(theta, 0.0, 1.0, 0.0)
 
+    axes()
+    enable_texture()
+
+    # front square
     glBegin(GL_TRIANGLE_FAN)
     glTexCoord2f(0.0, 0.0)
     glVertex3f(-5.0, -5.0, 0.0)
@@ -99,6 +139,38 @@ def render(time):
     glVertex3f(-5.0, 5.0, 0.0)
     glEnd()
 
+    # back triangles
+    glBegin(GL_TRIANGLES)
+    # left
+    glTexCoord2f(0.0, 1.0)
+    glVertex3f(-5.0, 5.0, 0.0)
+    glTexCoord2f(0.5, 0.5)
+    glVertex3f(0.0, 0.0, -5.0)
+    glTexCoord2f(0.0, 0.0)
+    glVertex3f(-5.0, -5.0, 0.0)
+    # bottom
+    glTexCoord2f(0.5, 0.5)
+    glVertex3f(0.0, 0.0, -5.0)
+    glTexCoord2f(1.0, 0.0)
+    glVertex3f(5.0, -5.0, 0.0)
+    glTexCoord2f(0.0, 0.0)
+    glVertex3f(-5.0, -5.0, 0.0)
+    # right
+    glTexCoord2f(0.5, 0.5)
+    glVertex3f(0.0, 0.0, -5.0)
+    glTexCoord2f(1.0, 1.0)
+    glVertex3f(5.0, 5.0, 0.0)
+    glTexCoord2f(1.0, 0.0)
+    glVertex3f(5.0, -5.0, 0.0)
+    # top
+    glTexCoord2f(0.5, 0.5)
+    glVertex3f(0.0, 0.0, -5.0)
+    glTexCoord2f(0.0, 1.0)
+    glVertex3f(-5.0, 5.0, 0.0)
+    glTexCoord2f(1.0, 1.0)
+    glVertex3f(5.0, 5.0, 0.0)
+    glEnd()
+    
     glFlush()
 
 
